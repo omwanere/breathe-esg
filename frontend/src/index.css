@@ -45,8 +45,15 @@
 
 /* Animations */
 @keyframes pulse-slow {
-  0%, 100% { opacity: 0.15; }
-  50% { opacity: 0.3; }
+
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
 }
 
 .animate-pulse-slow {

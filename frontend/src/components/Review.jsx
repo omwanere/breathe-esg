@@ -4,7 +4,7 @@ import api from '../api';
 import { 
   ChevronDown, ChevronUp, Edit2, Check, X, AlertTriangle, 
   CheckCircle, MessageSquare, Trash2, Filter, RotateCcw,
-  ChevronLeft, ChevronRight, CheckSquare, Square
+  ChevronLeft, ChevronRight, CheckSquare, Square, RefreshCw
 } from 'lucide-react';
 
 export default function Review() {

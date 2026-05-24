@@ -76,6 +76,20 @@ Navigate to **Audit Export**:
 
 ---
 
+## 🚀 Free One-Click Backend Deployment (Render)
+
+You can automatically deploy the backend server and its PostgreSQL database for free on Render using this button (make sure to replace `YOUR_GITHUB_REPO_URL` with your pushed GitHub repository link):
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=YOUR_GITHUB_REPO_URL)
+
+Alternatively:
+1. Go to the [Blueprints page on Render](https://dashboard.render.com/blueprints).
+2. Connect your GitHub repository.
+3. Click **Apply** to automatically provision the free database and web server.
+
+---
+
 ## 🌐 Live Deployment Placeholders
 * **Backend REST API**: [https://breathe-esg-backend.railway.app](https://breathe-esg-backend.railway.app)
 * **Frontend Application**: [https://breathe-esg.vercel.app](https://breathe-esg.vercel.app)
+

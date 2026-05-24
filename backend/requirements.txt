@@ -1,0 +1,9 @@
+django>=4.2,<5.2
+djangorestframework
+djangorestframework-simplejwt
+django-cors-headers
+openpyxl
+dj-database-url
+gunicorn
+
+

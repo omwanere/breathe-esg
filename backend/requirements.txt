@@ -5,5 +5,7 @@ django-cors-headers
 openpyxl
 dj-database-url
 gunicorn
+psycopg2-binary>=2.9.9
+
 
 

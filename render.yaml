@@ -3,7 +3,7 @@ services:
     name: breathe-esg-backend
     runtime: python
     rootDir: backend
-    buildCommand: "pip install -r requirements.txt && python manage.py migrate && python manage.py seed_unit_conversions && python manage.py seed_emission_factors && python manage.py seed_demo_tenant"
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate && python manage.py seed_unit_conversions && python manage.py seed_emission_factors && python manage.py seed_demo_tenant"
     startCommand: "gunicorn breathe_esg.wsgi:application --bind 0.0.0.0:$PORT"
     envVars:
       - key: DATABASE_URL

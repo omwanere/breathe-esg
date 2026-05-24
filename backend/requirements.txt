@@ -6,6 +6,8 @@ openpyxl
 dj-database-url
 gunicorn
 psycopg2-binary>=2.9.9
+whitenoise>=6.5.0
+
 
 
 

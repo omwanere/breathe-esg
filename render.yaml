@@ -15,6 +15,18 @@ services:
       - key: SECRET_KEY
         generateValue: true
 
+  - type: static
+    name: breathe-esg-frontend
+    buildCommand: "npm install && npm run build"
+    publishDir: dist
+    rootDir: frontend
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: breathe-esg-backend
+          property: url
+
 databases:
   - name: breathe-esg-db
     plan: free

@@ -5,8 +5,10 @@ from datetime import date
 import io
 from openpyxl import Workbook
 from django.core.files.uploadedfile import SimpleUploadedFile
-from esg_platform.models import Tenant, User, DataSource, IngestionJob, RawActivityRow, UnitConversion, EmissionFactor
-from esg_platform.parsers import ingest_sap_file, parse_german_decimal
+from apps.authentication.models import Tenant, User
+from apps.ingestion.models import DataSource, IngestionJob, UnitConversion, EmissionFactor
+from apps.review.models import RawActivityRow
+from apps.ingestion.parsers import ingest_sap_file, parse_german_decimal
 
 class SAPParserTests(TestCase):
     def setUp(self):
@@ -155,8 +157,8 @@ class SAPParserTests(TestCase):
 
     def test_2_9_partial_failure_rollback(self):
         # We test partial failure rollback by mocking the generator to yield a valid row, then raise an exception.
-        from esg_platform.views import run_async_ingestion
-        from esg_platform import parsers
+        from apps.ingestion.views import run_async_ingestion
+        from apps.ingestion import parsers
         
         original_read_file_data = parsers.read_file_data
         try:

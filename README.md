@@ -1,95 +1,64 @@
-# Breathe ESG Data Ingestion Platform
+# Breathe ESG — Data Ingestion Platform
 
-Breathe ESG is a full-stack platform designed to ingest carbon footprint data from diverse corporate transactional systems (SAP Material Movements, Utility Power Invoices, Concur Corporate Travel Ledger), normalize units, apply appropriate emission factors, and present a staging portal for analysts to verify, edit, and lock datasets for audit.
+## What this is
+A Django REST + React application that ingests carbon emissions 
+data from SAP, utility providers, and corporate travel platforms, 
+normalizes it, and provides an analyst review dashboard before 
+locking data for audit.
 
----
+## Live URLs
+- Frontend: https://<your-frontend>.vercel.app
+- Backend API: https://<your-backend>.onrender.com
+- Demo login: analyst@demo.com / Demo1234!
 
-## 🚀 Local Setup in 4 Commands
+## Local Development
 
-Follow these steps to run the application locally (Python and Node.js are required):
+### Prerequisites
+- Python 3.11+
+- Node.js 18+
+- A Supabase account with a project and database URL
 
+### Backend
 ```bash
-# 1. Clone/Navigate to folder and set up virtual environment
-python -m venv venv
-venv\Scripts\activate  # On Windows. On Mac/Linux: source venv/bin/activate
-
-# 2. Install backend dependencies & initialize database
-pip install -r backend/requirements.txt
-python backend/manage.py migrate
-
-# 3. Seed conversion factors, emission factors, and demo workspace
-python backend/manage.py seed_unit_conversions
-python backend/manage.py seed_emission_factors
-python backend/manage.py seed_demo_tenant
-
-# 4. Generate sample files & run the server
-python generate_sample_data.py
-python backend/manage.py runserver
+cd backend
+pip install -r requirements.txt
+cp .env.example .env
+# Edit .env — add your Supabase DATABASE_URL
+python manage.py migrate
+python manage.py seed_emission_factors
+python manage.py seed_unit_conversions
+python manage.py seed_demo_tenant
+python manage.py runserver
 ```
 
-*For the frontend development server, open a separate terminal inside `/frontend` and run:*
+### Frontend
 ```bash
+cd frontend
 npm install
+cp .env.example .env
+# .env already has VITE_API_URL=http://localhost:8000
 npm run dev
 ```
 
----
+Open http://localhost:5173
+Log in with analyst@demo.com / Demo1234!
 
-## 🐳 Docker Compose Alternative
-
-To launch the multi-container stack containing **Postgres, Redis, Django, and Nginx-hosted React** in one command, run:
+### Load sample data
 ```bash
-docker-compose up --build
+# With backend running locally:
+# Upload files via the UI at http://localhost:5173/upload
+# OR run:
+cd backend
+python manage.py load_sample_data
 ```
-Access the application dashboard at `http://localhost:3000`.
 
----
+## Deployment
+- Backend: Render Web Service (see build.sh and Procfile)
+- Frontend: Vercel (see vercel.json)
+- Database: Supabase PostgreSQL
 
-## 📊 Running Ingestions End-to-End
-
-### 1. Authentication
-* Navigate to the dashboard.
-* Click **Autofill Demo Login** or enter:
-  * **Email/Username**: `analyst@demo.com`
-  * **Password**: `Demo1234!`
-
-### 2. Ingestion Upload
-Navigate to **Ingest Data** in the sidebar. You will see three panels:
-* **SAP MB51**: Drag and drop `sample_data/sap_mb51_export.csv` (contains German decimal formatting, plant codes, movement filters). Click **Ingest File**.
-* **Utility electricity**: Upload `sample_data/utility_electricity.csv` (contains kWh/MWh conversion, billing window tracking). Click **Ingest File**.
-* **Corporate Travel**: Upload `sample_data/concur_travel_export.csv` (contains blank-distance flights requesting great-circle IATA math, cabin class factors). Click **Ingest File**.
-
-*Note: The platform runs background threads updating ingestion job logs in real time. The status indicators will transition from `PENDING` -> `PROCESSING` -> `COMPLETED`.*
-
-### 3. Review Staging Rows
-Navigate to **Review Rows**:
-* Filter by **Flagged Only** to inspect validation warnings (e.g. negative quantities, long billing windows, or unrecognized airports).
-* Click **Expand** (`v` icon) to view the raw transaction JSON payload, specific warnings, and prospective emission calculations.
-* Double-click a row's Quantity to test inline staging edits. Modifying these sets `edited_from_raw = True` and writes an entry in the audit trail.
-* Perform single-row **Approvals** or **Rejections** (requires explanation note).
-* Select multiple rows and click **Approve Selected** to bulk calculate CO2e metrics.
-
-### 4. Audit Trail and Lock
-Navigate to **Audit Export**:
-* Review the count of approved staging transactions ready for delivery.
-* Click **Export for Audit & Lock**. This downloads a compliance CSV file containing all audited calculations and changes `is_locked` to `True`. Subsequent edits to locked rows are blocked.
-
----
-
-## 🚀 Free One-Click Backend Deployment (Render)
-
-You can automatically deploy the backend server and its PostgreSQL database for free on Render using this button (make sure to replace `YOUR_GITHUB_REPO_URL` with your pushed GitHub repository link):
-
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=YOUR_GITHUB_REPO_URL)
-
-Alternatively:
-1. Go to the [Blueprints page on Render](https://dashboard.render.com/blueprints).
-2. Connect your GitHub repository.
-3. Click **Apply** to automatically provision the free database and web server.
-
----
-
-## 🌐 Live Deployment Placeholders
-* **Backend REST API**: [https://breathe-esg-backend.railway.app](https://breathe-esg-backend.railway.app)
-* **Frontend Application**: [https://breathe-esg.vercel.app](https://breathe-esg.vercel.app)
-
+## Documentation
+- docs/MODEL.md     — data model and design decisions
+- docs/DECISIONS.md — every ambiguity resolved
+- docs/TRADEOFFS.md — what was deliberately not built
+- docs/SOURCES.md   — real-world format research

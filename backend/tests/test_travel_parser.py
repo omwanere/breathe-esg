@@ -2,8 +2,10 @@ from django.test import TestCase
 from decimal import Decimal
 from datetime import date
 import io
-from esg_platform.models import Tenant, User, DataSource, IngestionJob, RawActivityRow, UnitConversion, EmissionFactor
-from esg_platform.parsers import ingest_travel_file, calculate_emissions
+from apps.authentication.models import Tenant, User
+from apps.ingestion.models import DataSource, IngestionJob, UnitConversion, EmissionFactor
+from apps.review.models import RawActivityRow
+from apps.ingestion.parsers import ingest_travel_file, calculate_emissions
 
 class TravelParserTests(TestCase):
     def setUp(self):

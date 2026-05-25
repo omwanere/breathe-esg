@@ -4,7 +4,10 @@ from rest_framework.test import APITestCase
 from decimal import Decimal
 from datetime import date
 from django.utils import timezone
-from esg_platform.models import Tenant, User, DataSource, IngestionJob, RawActivityRow, AuditLog, EmissionFactor
+from apps.authentication.models import Tenant, User
+from apps.ingestion.models import DataSource, IngestionJob, EmissionFactor
+from apps.review.models import RawActivityRow
+from apps.export.models import AuditLog
 
 class ReviewAPITests(APITestCase):
     def setUp(self):

@@ -21,8 +21,8 @@ export default function Login({ onLoginSuccess }) {
       const response = await api.post('/api/auth/login/', { username, password });
       const { access, refresh, user } = response.data;
       
-      localStorage.setItem('token', access);
-      localStorage.setItem('refreshToken', refresh);
+      localStorage.setItem('access_token', access);
+      localStorage.setItem('refresh_token', refresh);
       localStorage.setItem('user', JSON.stringify(user));
       
       onLoginSuccess(user);

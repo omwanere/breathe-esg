@@ -4,7 +4,7 @@ from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import RefreshToken
 from datetime import timedelta
 from django.utils import timezone
-from esg_platform.models import Tenant, User
+from apps.authentication.models import Tenant, User
 
 class AuthTests(APITestCase):
     def setUp(self):

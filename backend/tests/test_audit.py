@@ -6,8 +6,11 @@ from rest_framework.test import APITestCase
 from decimal import Decimal
 from datetime import date
 from django.utils import timezone
-from esg_platform.models import Tenant, User, DataSource, IngestionJob, RawActivityRow, AuditLog, EmissionFactor
-from esg_platform.parsers import ingest_sap_file
+from apps.authentication.models import Tenant, User
+from apps.ingestion.models import DataSource, IngestionJob, EmissionFactor
+from apps.review.models import RawActivityRow
+from apps.export.models import AuditLog
+from apps.ingestion.parsers import ingest_sap_file
 
 class AuditAndLogTests(APITestCase):
     def setUp(self):

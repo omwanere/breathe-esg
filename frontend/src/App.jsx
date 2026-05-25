@@ -27,7 +27,7 @@ function MainApp() {
   // Load user from localStorage on startup
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('access_token');
     if (savedUser && token) {
       setUser(JSON.parse(savedUser));
     }
@@ -39,8 +39,8 @@ function MainApp() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');
     setUser(null);
   };

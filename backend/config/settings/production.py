@@ -9,16 +9,16 @@ ALLOWED_HOSTS = config(
     default='breathe-esg-backend-g2h9.onrender.com,localhost,127.0.0.1'
 ).split(',')
 
-# Frontend Vercel URL; override via CORS_ALLOWED_ORIGINS env var
+# Frontend Vercel URL must be here for CORS preflight to pass
 CORS_ALLOWED_ORIGINS = config(
     'CORS_ALLOWED_ORIGINS',
-    default='http://localhost:5173'
+    default='https://breathe-esg-kappa.vercel.app,http://localhost:5173,http://localhost:3000'
 ).split(',')
 
-# CSRF trusted origins — required for Django 4.x when using HTTPS
+# Required in Django 4.x for HTTPS POST/PUT requests from trusted frontends
 CSRF_TRUSTED_ORIGINS = config(
     'CSRF_TRUSTED_ORIGINS',
-    default='https://breathe-esg-backend-g2h9.onrender.com'
+    default='https://breathe-esg-backend-g2h9.onrender.com,https://breathe-esg-kappa.vercel.app'
 ).split(',')
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -26,3 +26,4 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = False
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+

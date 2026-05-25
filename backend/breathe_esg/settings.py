@@ -84,11 +84,20 @@ WSGI_APPLICATION = 'breathe_esg.wsgi.application'
 import os
 import dj_database_url
 
-# Default to SQLite for local development, but configured to support environment PostgreSQL in production/Railway
+DATABASE_URL = os.environ.get('DATABASE_URL', '')
+
+# Fix Render's postgres:// → postgresql:// scheme mismatch
+if DATABASE_URL.startswith('postgres://'):
+    DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+
+DATABASE_IS_POSTGRES = DATABASE_URL.startswith('postgresql://') or DATABASE_URL.startswith('postgres://')
+
+# Default to SQLite for local development, but configured to support environment PostgreSQL in production/Render
 DATABASES = {
     'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600
+        default=DATABASE_URL or f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+        ssl_require=DATABASE_IS_POSTGRES
     )
 }
 

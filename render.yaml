@@ -8,6 +8,8 @@ services:
     envVars:
       - key: DATABASE_URL
         sync: false  # Managed manually on Render Dashboard (points to Supabase connection pooling URL)
+      - key: DJANGO_SETTINGS_MODULE
+        value: "config.settings.production"
       - key: DEBUG
         value: "False"
       - key: SECRET_KEY

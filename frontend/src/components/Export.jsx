@@ -114,9 +114,13 @@ export default function Export() {
               <div>
                 <p className="text-xs font-bold text-amber-400">Locking Policy Enforcement</p>
                 <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
-                  Upon clicking export, matching records are permanently locked (`is_locked = True`). Any subsequent changes will require administrative overrides and will generate explicit warnings in the compliance history.
+                  Upon clicking export, matching records are permanently locked (<code>is_locked = True</code>). Any subsequent changes will require administrative overrides and will generate explicit warnings in the compliance history.
                 </p>
               </div>
+            </div>
+
+            <div className="p-3 bg-amber-500/5 border border-amber-500/15 rounded-xl text-[11px] text-amber-300 leading-relaxed">
+              ⚠️ <strong>Important:</strong> When you click "Export for Audit &amp; Lock", all approved rows will be downloaded as a CSV file <strong>and permanently locked</strong>. Locked rows cannot be edited, re-approved, or changed. Only export when you are certain the data is ready for your auditor.
             </div>
           </div>
 

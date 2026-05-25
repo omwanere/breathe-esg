@@ -162,21 +162,21 @@ export default function Upload() {
         {renderUploadCard(
           'sap', 
           'SAP Goods Issues (MB51)', 
-          'MB51 movement export (CSV/XLSX), German format', 
+          'SAP MB51 flat file export (.csv or .xlsx) — German headers, DD.MM.YYYY dates', 
           '/api/ingestion/upload/sap/',
           '.csv,.xlsx'
         )}
         {renderUploadCard(
           'utility', 
-          'Utility Bills (EDF/PG&E)', 
-          'Electric meter bill portal export (CSV)', 
+          'Utility Bills (EDF / PG&E / National Grid)', 
+          'Utility portal billing CSV export — kWh or MWh, any billing period', 
           '/api/ingestion/upload/utility/',
           '.csv'
         )}
         {renderUploadCard(
           'travel', 
           'Corporate Travel (Concur)', 
-          'Detail travel expense report export (CSV)', 
+          'SAP Concur Travel & Expense Detail report (.csv) — flights, hotels, ground', 
           '/api/ingestion/upload/travel/',
           '.csv'
         )}

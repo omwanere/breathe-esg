@@ -26,20 +26,20 @@ def main():
     user = User.objects.get(username='analyst@demo.com')
 
     # Paths to sample data files
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    sample_data_dir = os.path.join(current_dir, 'sample_data')
     
     # 3. Generate sample data files if they do not exist
-    sample_data_dir = os.path.join(base_dir, 'sample_data')
     if not os.path.exists(sample_data_dir) or not os.listdir(sample_data_dir):
         print("Generating sample data files...")
-        sys.path.append(base_dir)
+        sys.path.append(current_dir)
         import generate_sample_data
         os.makedirs(sample_data_dir, exist_ok=True)
         generate_sample_data.generate_sap_data(os.path.join(sample_data_dir, 'sap_mb51_export.csv'))
         generate_sample_data.generate_utility_data(os.path.join(sample_data_dir, 'utility_electricity.csv'))
         generate_sample_data.generate_travel_data(os.path.join(sample_data_dir, 'concur_travel_export.csv'))
         print("Sample data files generated.")
-
+ 
     files_to_ingest = [
         {
             'path': os.path.join(sample_data_dir, 'sap_mb51_export.csv'),

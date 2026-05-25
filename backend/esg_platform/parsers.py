@@ -323,7 +323,9 @@ def ingest_utility_file(job_id, file_obj, filename):
             # Normalize MWh to kWh
             normalized_kwh = None
             if raw_unit.upper() == 'MWH':
-                normalized_kwh = parsed_qty * Decimal('1000')
+                conv = UnitConversion.objects.filter(from_unit='MWh', to_unit='kWh').first()
+                factor = conv.factor if conv else Decimal('1000')
+                normalized_kwh = parsed_qty * factor
                 mapped_unit = 'MWh'
             elif raw_unit.upper() == 'KWH':
                 normalized_kwh = parsed_qty
@@ -409,6 +411,8 @@ def ingest_travel_file(job_id, file_obj, filename):
             flag_reasons = []
 
             expense_type = str(row.get('expense_type', '')).strip()
+            if not expense_type:
+                flag_reasons.append("Missing expense type")
             amount_usd = Decimal('0')
             try:
                 amount_raw = str(row.get('amount_usd', '0')).replace('$', '').replace(',', '').strip()
@@ -614,7 +618,9 @@ def calculate_emissions(row):
             # Target unit: kWh
             qty_kwh = qty
             if unit == 'MWh':
-                qty_kwh = qty * Decimal('1000')
+                conv = UnitConversion.objects.filter(from_unit='MWh', to_unit='kWh').first()
+                factor = conv.factor if conv else Decimal('1000')
+                qty_kwh = qty * factor
             elif unit != 'kWh':
                 # Attempt to look up conversion
                 conv = UnitConversion.objects.filter(from_unit=unit, to_unit='kWh').first()

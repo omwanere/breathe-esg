@@ -153,6 +153,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+    'EXCEPTION_HANDLER': 'esg_platform.exceptions.custom_exception_handler',
 }
 
 # Simple JWT Configuration

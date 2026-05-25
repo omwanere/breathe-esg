@@ -107,19 +107,51 @@ class BaseUploadView(APIView):
             return Response({'error': 'No file uploaded', 'detail': 'Key name should be "file"'}, status=status.HTTP_400_BAD_REQUEST)
         
         uploaded_file = request.FILES['file']
+        
+        # 1. Validate File Size (max 10MB)
+        if uploaded_file.size > 10 * 1024 * 1024:
+            return Response({'error': 'File too large', 'detail': 'Maximum allowed file size is 10MB.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        # 2. Validate File Extension
+        filename = uploaded_file.name
+        ext = filename.split('.')[-1].lower() if '.' in filename else ''
+        if ext not in ('csv', 'xlsx'):
+            return Response({'error': 'Invalid file type', 'detail': 'Only CSV and XLSX files are allowed.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        # 3. Read file content for scanning and background parsing
+        file_content = uploaded_file.read()
+        
+        # 4. Check for Malicious Binary File masquerading as CSV
+        if ext == 'csv':
+            if b'\x00' in file_content or file_content.startswith(b'MZ'):
+                return Response({'error': 'Malicious file detected', 'detail': 'Binary contents or executable headers are not allowed in CSV uploads.'}, status=status.HTTP_400_BAD_REQUEST)
+                
         ds = self.get_data_source(source_type)
         
+        # 5. Check for potential duplicate upload
+        import os
+        duplicate_jobs = IngestionJob.objects.filter(
+            data_source=ds,
+            status='COMPLETED'
+        )
+        is_duplicate = False
+        for dj in duplicate_jobs:
+            if dj.raw_file and os.path.basename(dj.raw_file.name) == filename:
+                is_duplicate = True
+                break
+                
+        error_log = []
+        if is_duplicate:
+            error_log.append({'warning': 'This file has already been ingested. Ingesting again may create duplicate entries.'})
+            
         # Create IngestionJob
         job = IngestionJob.objects.create(
             data_source=ds,
             status='PENDING',
             raw_file=uploaded_file,
-            triggered_by=request.user
+            triggered_by=request.user,
+            error_log=error_log
         )
-
-        # Read file contents and launch parser in a background thread to prevent API blocking
-        file_content = uploaded_file.read()
-        filename = uploaded_file.name
 
         threading.Thread(
             target=run_async_ingestion,
@@ -167,8 +199,8 @@ class RawActivityRowViewSet(TenantScopedViewSet):
         scope_param = self.request.query_params.get('scope')
         flagged_only = self.request.query_params.get('flagged_only')
         
-        date_start = self.request.query_params.get('date_start')
-        date_end = self.request.query_params.get('date_end')
+        date_start = self.request.query_params.get('date_start') or self.request.query_params.get('date_from')
+        date_end = self.request.query_params.get('date_end') or self.request.query_params.get('date_to')
 
         if status_param:
             qs = qs.filter(status=status_param)
@@ -452,10 +484,6 @@ class ExportAuditView(APIView):
         # Select approved, unlocked rows
         approved_rows = RawActivityRow.objects.filter(tenant=tenant, status='APPROVED', is_locked=False)
         
-        if not approved_rows.exists():
-            # Return empty response or simple message in browser
-            return Response({'error': 'No data ready for export', 'detail': 'There are no APPROVED and unlocked rows to export.'}, status=status.HTTP_400_BAD_REQUEST)
-
         # Create HTTP Response with CSV headers
         response = HttpResponse(content_type='text/csv')
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')

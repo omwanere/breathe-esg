@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '../api';
 import { 
   FileSpreadsheet, AlertOctagon, CheckCircle2, RefreshCw, 
@@ -7,13 +7,14 @@ import {
 } from 'lucide-react';
 
 export default function Dashboard() {
+  const queryClient = useQueryClient();
   const { data: summary, isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ['reviewSummary'],
     queryFn: async () => {
       const res = await api.get('/api/review/summary/');
       return res.data;
     },
-    refetchInterval: 10000 // auto-refresh every 10 seconds for real-time feel
+    // No auto-refresh — use the Refresh button to update manually
   });
 
   const { data: jobs, isLoading: jobsLoading } = useQuery({
@@ -22,7 +23,7 @@ export default function Dashboard() {
       const res = await api.get('/api/ingestion/jobs/');
       return res.data.slice(0, 5); // display only last 5 jobs
     },
-    refetchInterval: 5000
+    // No auto-refresh — triggered by same Refresh button via queryClient.invalidateQueries
   });
 
   if (isLoading || jobsLoading) {
@@ -70,7 +71,10 @@ export default function Dashboard() {
           <p className="text-slate-400 text-sm mt-0.5">Analyst oversight & ingestion platform metrics</p>
         </div>
         <button 
-          onClick={() => refetch()}
+          onClick={() => {
+            queryClient.invalidateQueries({ queryKey: ['reviewSummary'] });
+            queryClient.invalidateQueries({ queryKey: ['recentJobs'] });
+          }}
           disabled={isFetching}
           className="inline-flex items-center gap-2 py-1.5 px-3 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 active:scale-[0.98] transition-all text-xs"
         >
@@ -209,7 +213,7 @@ export default function Dashboard() {
               <Zap className="w-5 h-5 text-emerald-400" />
               <h2 className="text-md font-bold text-white">Recent Ingestion Jobs</h2>
             </div>
-            <span className="text-slate-400 text-xs">Live updates</span>
+            <span className="text-slate-400 text-xs">Last 5 jobs</span>
           </div>
 
           <div className="overflow-x-auto">
